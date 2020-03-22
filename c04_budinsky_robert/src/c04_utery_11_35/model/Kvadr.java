@@ -3,8 +3,7 @@ package c04_utery_11_35.model;
 import transforms.Col;
 import transforms.Point3D;
 
-import java.awt.*;
-import java.util.List;
+
 
 public class Kvadr extends Teleso {
     public Kvadr() {
@@ -67,6 +66,6 @@ public class Kvadr extends Teleso {
         indexBuffer.add(4);
         indexBuffer.add(0);
 
-        elements.add(new Element(ElementType.TRIANGLE, 36, 0));
+        element = (new Element(ElementType.TRIANGLE, 36, 0));
     }
 }

@@ -34,14 +34,6 @@ public class Controller3D {
         initListeners(raster);
     }
 
-    private void display() {
-        renderer3D.clear();
-        renderer3D.setModel(new Mat4Identity());
-        renderer3D.setView(camera.getViewMatrix());
-        renderer3D.setProjection(projection);
-        renderer3D.setShader(testShader);
-        renderer3D.setShader(vertex -> new Color(Math.round(vertex.x % 255), 0, 0));
-    }
 
     private void initObjects(Raster raster) {
         renderer3D = new Renderer3D(raster);
@@ -90,39 +82,26 @@ public class Controller3D {
             @Override
             public void mouseDragged(MouseEvent e) {
 
-                int tmpX = mx;
-                int tmpY = my;
-
-                mx = e.getX();
-                my = e.getY();
-
-                int xDiff = tmpX - mx;
-                int yDiff = tmpY - my;
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    double diff = (mx - e.getX()) / 100.0;
-                    double azimuth = camera.getAzimuth() + diff;
-                    camera = camera.withAzimuth(azimuth);
-                    renderer3D.setView(camera.getViewMatrix());
-                }
-
+                int x = e.getX();
+                int y = e.getY();
                 if(SwingUtilities.isLeftMouseButton(e)){
                     renderer3D.clear();
-                    renderer3D.setModel(renderer3D.getModel().mul(new Mat4RotXYZ(0,-yDiff * Math.PI / 180, xDiff * Math.PI / 180)));
+                    renderer3D.setModel(renderer3D.getModel().mul(new Mat4RotXYZ(0,-(my - y) * Math.PI / 180, (mx - x) * Math.PI / 180)));
                     renderer3D.draw(elements,jehlan.getVertexBuffer(),jehlan.getIndexBuffer());
                     renderer3D.draw(elements,krychle.getVertexBuffer(),krychle.getIndexBuffer());
-
                 }
-
-
             }
         });
         raster.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+
                 if (e.getKeyChar() == 'w') camera = camera.forward(0.5);
                 if (e.getKeyChar() == 'a') camera = camera.left(0.5);
                 if (e.getKeyChar() == 's') camera = camera.backward(0.5);
                 if (e.getKeyChar() == 'd') camera = camera.right(0.5);
+                if (e.getKeyChar() == 'q') camera = camera.up(0.5);
+                if (e.getKeyChar() == 'e') camera = camera.down(0.5);
 
                 elements = new ArrayList<>();
                 elements.add(new Element(ElementType.TRIANGLE, 36, 0));

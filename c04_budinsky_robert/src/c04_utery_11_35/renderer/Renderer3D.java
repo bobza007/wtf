@@ -118,7 +118,6 @@ public class Renderer3D implements GPURenderer {
     }
 
     private void drawTriangle(Vertex a, Vertex b, Vertex c) {
-
         Col color1 = a.getColor();
         Col color2 = b.getColor();
         Col color3 = c.getColor();
@@ -214,9 +213,8 @@ public class Renderer3D implements GPURenderer {
     }
 
     private Vec3D transformToWindow(Vec3D v) {
-        return v.mul(new Vec3D(1, -1, 1)) // Y jde nahoru, chceme dolu
-                .add(new Vec3D(1, 1, 0)) // (0,0) je uprostřed, chceme v rohu
-                // máme <0, 2> -> vynásobíme polovinou velikosti plátna
+        return v.mul(new Vec3D(1, -1, 1))
+                .add(new Vec3D(1, 1, 0))
                 .mul(new Vec3D(Raster.WIDTH / 2f, Raster.HEIGHT / 2f, 1));
     }
 

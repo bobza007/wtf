@@ -28,8 +28,5 @@ public class Vertex {
         return color;
     }
 
-//    add(Vertex)
-//
-//    mul(double)
 
 }

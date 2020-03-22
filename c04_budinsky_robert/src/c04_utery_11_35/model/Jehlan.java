@@ -3,8 +3,6 @@ package c04_utery_11_35.model;
 import transforms.Col;
 import transforms.Point3D;
 
-import java.awt.*;
-
 public class Jehlan extends Teleso {
     public Jehlan(){
         vertexBuffer.add(new Vertex(new Point3D(-2, -2, -2),new Col(0xFF00FA)));
@@ -29,6 +27,6 @@ public class Jehlan extends Teleso {
         indexBuffer.add(0);
         indexBuffer.add(1);
 
-        elements.add(new Element(ElementType.TRIANGLE,12,0));
+        element = (new Element(ElementType.TRIANGLE,12,0));
     }
 }
