@@ -2,12 +2,10 @@ package c04_utery_11_35.controller;
 
 import c04_utery_11_35.model.*;
 import c04_utery_11_35.renderer.Renderer3D;
-import c04_utery_11_35.renderer.Shader;
 import c04_utery_11_35.view.Raster;
 import transforms.*;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -19,7 +17,6 @@ public class Controller3D {
 
     private Renderer3D renderer3D;
     private Camera camera;
-    private Shader<Vertex, Color> testShader;
     private Teleso krychle;
     private Teleso jehlan;
     private Mat4 projection;
@@ -40,14 +37,10 @@ public class Controller3D {
         camera =new Camera().withPosition(new Vec3D(0.5,-6,2))
                 .withAzimuth(Math.toRadians(90)).withZenith(Math.toRadians(-20));
         resetCamera();
+
         krychle = new Kvadr();
         jehlan = new Jehlan();
 
-        testShader = vertex -> {
-            long zbytek = Math.round(vertex.x) % 2;
-
-            return (zbytek == 0) ? Color.GREEN : Color.BLUE;
-        };
         projection = new Mat4PerspRH(Math.PI/4, Raster.HEIGHT/(float)Raster.WIDTH, 1, 200);
         renderer3D.setModel(new Mat4Identity());
         renderer3D.setView(camera.getViewMatrix());
