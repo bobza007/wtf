@@ -1,5 +1,6 @@
 package c04_utery_11_35.model;
 
+import transforms.Col;
 import transforms.Point3D;
 
 import java.awt.*;
@@ -7,10 +8,10 @@ import java.awt.*;
 public class Vertex {
 
     private final Point3D point;
-    private final Color color;
+    private final Col color;
     public final double x, y, z, w;
 
-    public Vertex(Point3D point, Color color) {
+    public Vertex(Point3D point, Col color) {
         this.point = point;
         this.color = color;
         x = point.getX();
@@ -23,7 +24,7 @@ public class Vertex {
         return point;
     }
 
-    public Color getColor() {
+    public Col getColor() {
         return color;
     }
 

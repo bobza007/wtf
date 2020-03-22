@@ -51,29 +51,21 @@ public class Renderer3D implements GPURenderer {
     }
 
     private void prepareTriangle(Vertex a, Vertex b, Vertex c) {
-        // 1. transformace vrcholů
+
         a = new Vertex(a.getPoint().mul(model).mul(view).mul(projection), a.getColor());
-        
         b = new Vertex(b.getPoint().mul(model).mul(view).mul(projection), b.getColor());
         c = new Vertex(c.getPoint().mul(model).mul(view).mul(projection), c.getColor());
 
-        // 2. ořezání
-        // rychlé ořezání zobrazovacím objemem
-        // vyhodí trojúhelníky, které jsou celé mimo zobrazovací objem
 
-        //x
         if (a.x < -a.w && b.x < -b.w && c.x < -c.w) return;
         if (a.x > a.w && b.x > b.w && c.x > c.w) return;
 
-        //y
         if (a.y < -a.w && b.y < -b.w && c.y < -c.w) return;
         if (a.y > a.w && b.y > b.w && c.y > c.w) return;
 
-        //z
         if (a.z < -a.w && b.z < -b.w && c.z < -c.w) return;
         if (a.z > a.w && b.z > b.w && c.z > c.w) return;
 
-        // 3. seřazení trojúhelníků podle souřadnice z
         if (a.z < b.z) {
             Vertex temp = a;
             a = b;
@@ -90,34 +82,32 @@ public class Renderer3D implements GPURenderer {
             b = temp;
         }
 
-        // 4. ořezání a interpolace podle hrany Z
         if (a.z < 0) {
-            // a.z je největší a je záporné, takže celý trojúhelník není vidět
             return;
         } else if (b.z < 0) {
 
             double t = (0 - a.z) / (b.z - a.z);
-            // double t = a.z / (a.z - b.z)
             Point3D dPoint = a.getPoint().mul(1 - t).add(b.getPoint().mul(t));
-            Vertex ab = new Vertex(dPoint, a.getColor());
-            // nekorektně barva, měla by se také interpolovat; volitelně
+            Col color = a.getColor().mul(1 - t).add(b.getColor().mul(t));
+            Vertex ab = new Vertex(dPoint, color);
+
 
             double t2 = -a.z / (c.z - a.z);
-            Vertex ac = new Vertex(a.getPoint().mul(1 - t2).add(c.getPoint().mul(t2)), c.getColor());
-            // lze vytvořit funkci pro ořezání, aby se neopakoval kód
+            Col color2 = a.getColor().mul(1 - t2).add(c.getColor().mul(t2));
+            Vertex ac = new Vertex(a.getPoint().mul(1 - t2).add(c.getPoint().mul(t2)), color2);
 
             drawTriangle(a, ab, ac);
 
         } else if (c.z < 0) {
 
-            // TODO ac, bc
-
             double t = (0 - a.z) / (c.z - a.z);
             Point3D dPoint = a.getPoint().mul(1 - t).add(c.getPoint().mul(t));
-            Vertex ac = new Vertex(dPoint, a.getColor());
+            Col color = a.getColor().mul(1 - t).add(c.getColor().mul(t));
+            Vertex ac = new Vertex(dPoint, color);
 
             double t2 = (0-b.z) / (c.z - b.z);
-            Vertex bc = new Vertex(b.getPoint().mul(1 - t2).add(c.getPoint().mul(t2)), c.getColor());
+            Col color2 = b.getColor().mul(1 - t2).add(c.getColor().mul(t2));
+            Vertex bc = new Vertex(b.getPoint().mul(1 - t2).add(c.getPoint().mul(t2)), color2);
 
             drawTriangle(a, b, bc);
             drawTriangle(a, bc, ac);
@@ -129,15 +119,14 @@ public class Renderer3D implements GPURenderer {
 
     private void drawTriangle(Vertex a, Vertex b, Vertex c) {
 
-        Color color1 = a.getColor();
-        Color color2 = b.getColor();
-        Color color3 = c.getColor();
+        Col color1 = a.getColor();
+        Col color2 = b.getColor();
+        Col color3 = c.getColor();
 
         Optional<Vec3D> d1 = a.getPoint().dehomog();
         Optional<Vec3D> d2 = b.getPoint().dehomog();
         Optional<Vec3D> d3 = c.getPoint().dehomog();
 
-        // zahodit trojúhelník, pokud některý vrchol má w==0 (nelze provést dehomogenizaci)
         if (!d1.isPresent() || !d2.isPresent() || !d3.isPresent()) return;
 
         Vec3D v1 = d1.get();
@@ -148,13 +137,11 @@ public class Renderer3D implements GPURenderer {
         v2 = transformToWindow(v2);
         v3 = transformToWindow(v3);
 
-//        Vertex aa = new Vertex(new Point3D(v1), color1);
-
         if (v1.getY() > v2.getY()) {
             Vec3D temp = v1;
             v1 = v2;
             v2 = temp;
-            Color tempC = color1;
+            Col tempC = color1;
             color1 = color2;
             color2 = tempC;
         }
@@ -162,7 +149,7 @@ public class Renderer3D implements GPURenderer {
             Vec3D temp = v2;
             v2 = v3;
             v3 = temp;
-            Color tempC = color2;
+            Col tempC = color2;
             color2 = color3;
             color3 = tempC;
         }
@@ -170,7 +157,7 @@ public class Renderer3D implements GPURenderer {
             Vec3D temp = v1;
             v1 = v2;
             v2 = temp;
-            Color tempC = color1;
+            Col tempC = color1;
             color1 = color2;
             color2 = tempC;
         }
@@ -178,31 +165,31 @@ public class Renderer3D implements GPURenderer {
         for (int y = (int) Math.max((int) v1.getY()+1,0); y <= Math.min((int) v2.getY(), Raster.HEIGHT-1); y++) {
             double t1 = (y - v2.getY()) / (v1.getY() - v2.getY());
             Vec3D v12 = v2.mul(1 - t1).add(v1.mul(t1));
-            Color c12 = new Color((int)(color2.getRGB()*(1-t1)+color1.getRGB()*t1));
+            Col c12 = color2.mul(1 - t1).add(color1.mul(t1));
 
             double t2 = (y - v3.getY()) / (v1.getY() - v3.getY());
             Vec3D v13 = v3.mul(1 - t2).add(v1.mul(t2));
-            Color c13 = new Color((int)(color3.getRGB()*(1-t2)+color1.getRGB()*t2));
+            Col c13 = color3.mul(1 - t2).add(color1.mul(t2));
             fillLine(y, v12, v13, c12, c13);
         }
 
         for (int y = (int) Math.max((int) v2.getY()+1,0); y <= Math.min((int) v3.getY(), Raster.HEIGHT-1); y++) {
             double t1 = (y - v2.getY()) / (v3.getY() - v2.getY());
             Vec3D v23 = v2.mul(1 - t1).add(v3.mul(t1));
-            Color c23 = new Color((int)(color3.getRGB()*(1-t1)+color2.getRGB()*t1));
+            Col c23 = color2.mul(1 - t1).add(color2.mul(t1));
             double t2 = (y - v3.getY()) / (v1.getY() - v3.getY());
             Vec3D v13 = v3.mul(1 - t2).add(v1.mul(t2));
-            Color c13 = new Color((int)(color3.getRGB()*(1-t2)+color1.getRGB()*t2));
+            Col c13 =color3.mul(1 - t2).add(color2.mul(t2));
             fillLine(y, v23, v13, c23, c13);
         }
     }
 
-    private void fillLine(int y, Vec3D a, Vec3D b, Color colorA, Color colorB) {
+    private void fillLine(int y, Vec3D a, Vec3D b, Col colorA, Col colorB) {
         if (a.getX() > b.getX()) {
             Vec3D temp = a;
             a = b;
             b = temp;
-            Color tempC = colorA;
+            Col tempC = colorA;
             colorA = colorB;
             colorB = tempC;
 
@@ -211,13 +198,13 @@ public class Renderer3D implements GPURenderer {
         int end = (int) Math.min(b.getX(),Raster.WIDTH - 1);
         for (int x = start; x <=end ; x++) {
             double t = (x - a.getX()) / (b.getX() - a.getX());
-            Color color = new Color((int)(colorB.getRGB()*(1-t)+colorA.getRGB()*t));
+            Col color =colorB.mul(1 - t).add(colorA.mul(t));
             double z = a.getZ() * (1 - t) + b.getZ() * t;
             drawPixel(x, y, z, color);
         }
     }
 
-    private void drawPixel(int x, int y, double z, Color color) {
+    private void drawPixel(int x, int y, double z, Col color) {
         if(x >= Raster.WIDTH || y >= Raster.HEIGHT)
             return;
         if (zb.get(x, y) > z) {
