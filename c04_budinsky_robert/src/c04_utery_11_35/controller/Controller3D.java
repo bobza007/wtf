@@ -50,9 +50,6 @@ public class Controller3D {
         resetCamera();
         krychle = new Kvadr();
         jehlan = new Jehlan();
-       /* testShader = (vertex) -> {
-            return vertex.getColor();
-        };*/
 
         testShader = vertex -> {
             long zbytek = Math.round(vertex.x) % 2;

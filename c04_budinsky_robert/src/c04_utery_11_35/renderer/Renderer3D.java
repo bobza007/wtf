@@ -163,23 +163,23 @@ public class Renderer3D implements GPURenderer {
         }
 
         for (int y = (int) Math.max((int) v1.getY()+1,0); y <= Math.min((int) v2.getY(), Raster.HEIGHT-1); y++) {
-            double t1 = (y - v2.getY()) / (v1.getY() - v2.getY());
-            Vec3D v12 = v2.mul(1 - t1).add(v1.mul(t1));
-            Col c12 = color2.mul(1 - t1).add(color1.mul(t1));
+            double t1 = (y - v1.getY()) / (v2.getY() - v1.getY());
+            Vec3D v12 = v1.mul(1 - t1).add(v2.mul(t1));
+            Col c12 = color1.mul(1 - t1).add(color2.mul(t1));
 
-            double t2 = (y - v3.getY()) / (v1.getY() - v3.getY());
-            Vec3D v13 = v3.mul(1 - t2).add(v1.mul(t2));
-            Col c13 = color3.mul(1 - t2).add(color1.mul(t2));
+            double t2 = (y - v1.getY()) / (v3.getY() - v1.getY());
+            Vec3D v13 = v1.mul(1 - t2).add(v3.mul(t2));
+            Col c13 = color1.mul(1 - t2).add(color3.mul(t2));
             fillLine(y, v12, v13, c12, c13);
         }
 
         for (int y = (int) Math.max((int) v2.getY()+1,0); y <= Math.min((int) v3.getY(), Raster.HEIGHT-1); y++) {
             double t1 = (y - v2.getY()) / (v3.getY() - v2.getY());
             Vec3D v23 = v2.mul(1 - t1).add(v3.mul(t1));
-            Col c23 = color2.mul(1 - t1).add(color2.mul(t1));
-            double t2 = (y - v3.getY()) / (v1.getY() - v3.getY());
-            Vec3D v13 = v3.mul(1 - t2).add(v1.mul(t2));
-            Col c13 =color3.mul(1 - t2).add(color2.mul(t2));
+            Col c23 = color2.mul(1 - t1).add(color3.mul(t1));
+            double t2 = (y - v1.getY()) / (v3.getY() - v1.getY());
+            Vec3D v13 = v1.mul(1 - t2).add(v3.mul(t2));
+            Col c13 =color1.mul(1 - t2).add(color3.mul(t2));
             fillLine(y, v23, v13, c23, c13);
         }
     }
@@ -198,7 +198,7 @@ public class Renderer3D implements GPURenderer {
         int end = (int) Math.min(b.getX(),Raster.WIDTH - 1);
         for (int x = start; x <=end ; x++) {
             double t = (x - a.getX()) / (b.getX() - a.getX());
-            Col color =colorB.mul(1 - t).add(colorA.mul(t));
+            Col color =colorA.mul(1 - t).add(colorB.mul(t));
             double z = a.getZ() * (1 - t) + b.getZ() * t;
             drawPixel(x, y, z, color);
         }

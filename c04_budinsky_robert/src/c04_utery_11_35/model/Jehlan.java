@@ -9,8 +9,8 @@ public class Jehlan extends Teleso {
     public Jehlan(){
         vertexBuffer.add(new Vertex(new Point3D(-2, -2, -2),new Col(0xFF00FA)));
         vertexBuffer.add(new Vertex(new Point3D(2, -2, 2),new Col(0x760394)));
-        vertexBuffer.add(new Vertex(new Point3D(-2, 2,2),new Col(0x00FF33)));
-        vertexBuffer.add(new Vertex(new Point3D(2,2, -2),new Col(0x00FFFD)));
+        vertexBuffer.add(new Vertex(new Point3D(-2, 2,2),new Col(0x000000)));
+        vertexBuffer.add(new Vertex(new Point3D(2,2, -2),new Col(0xFF0000)));
 
 //1
         indexBuffer.add(0);
